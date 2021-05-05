@@ -1,0 +1,3 @@
+[submodule "thirdparty/mxedeployqt"]
+	path = thirdparty/mxedeployqt
+	url = https://github.com/saidinesh5/mxedeployqt
