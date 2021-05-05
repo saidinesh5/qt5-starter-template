@@ -22,6 +22,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 option(VERSION_FROM_GIT "Use the version from git" OFF)
 include(cmake/GetVersionFromGitTag.cmake)
 configure_file(version.h.in version.h)
+
+if (UNIX AND NOT APPLE)
+    set(GNULINUX TRUE)
+endif()
+
 # QtCreator supports the following variables for Android, which are identical to qmake Android variables.
 # Check https://doc.qt.io/qt/deployment-android.html for more information.
 # They need to be set before the find_package(...) calls below.
@@ -74,8 +79,8 @@ target_compile_definitions(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME}
   PRIVATE Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Quick)
 
-if(UNIX AND NOT APPLE)
-    install(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_INSTALL_BINDIR})
+if(${GNULINUX})
+    install(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_INSTALL_PREFIX}/usr/bin)
 else()
     install(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_INSTALL_PREFIX})
 endif()
@@ -99,4 +104,11 @@ if (WIN32)
     set(NSIS_APP_LICENSE "${APPLICATION_LICENSE}")
     set(NSIS_APP_DIST_DIR "${CMAKE_INSTALL_PREFIX}")
     configure_file(packaging/installer.nsis.in installer.nsis @ONLY)
+elseif(${GNULINUX})
+    set(APPIMAGE_APP_NAME "${APPLICATION_NAME}")
+    set(APPIMAGE_APP_EXEC "${PROJECT_NAME}")
+    set(APPIMAGE_APP_ICON "${PROJECT_NAME}")
+    configure_file(resources/logo.svg "${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}.svg" COPYONLY)
+    configure_file(packaging/Application.desktop "${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}.desktop")
+else()
 endif()

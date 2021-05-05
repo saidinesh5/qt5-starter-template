@@ -1,0 +1,37 @@
+#!/bin/bash
+
+TARGET="linux64"
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+WORKSPACE=${WORKSPACE:-$SCRIPT_DIR}
+BUILD_DIR="$WORKSPACE/build/$TARGET"
+DIST_DIR="$WORKSPACE/build/dist/$TARGET"
+RELEASE_DIR="$WORKSPACE/build/release/$TARGET"
+TIMESTAMP=`date +%Y%m%d`
+BUILD_ID=${BUILD_ID:-$TIMESTAMP}
+CCACHE_DIR=$WORKSPACE/build/cache/$TARGET
+
+die() {
+  echo "Error:" $@
+  echo "Make sure your sources are compilable and run this script only in qt5-build-environment-linux64 container."
+  exit -1
+}
+
+cd "$WORKSPACE"
+rm -rf "$BUILD_DIR"
+rm -rf "$DIST_DIR"
+rm -rf "$RELEASE_DIR"
+mkdir -p "$CCACHE_DIR"
+mkdir -p "$BUILD_DIR"
+mkdir -p "$RELEASE_DIR"
+
+cd "$BUILD_DIR"
+cmake -DCMAKE_INSTALL_PREFIX="$DIST_DIR" "$WORKSPACE" || die "Unable to configure the program"
+make -j `nproc` || die "Unable to build the program"
+make install
+
+PATH=/appimagetools/bin:$PATH linuxdeployqt $DIST_DIR/*.desktop \
+                                            -appimage \
+                                            -exclude-libs="libqsqlibase,libqsqlodbc,libqsqlpsql,libqsqltds,libqsqlmysql" \
+                                            -qmldir="$WORKSPACE/qml" || die "Unable to build AppImage"
+
+mv *.AppImage "$RELEASE_DIR"/

@@ -1,0 +1,8 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=@APPIMAGE_APP_NAME@
+Exec=@APPIMAGE_APP_EXEC@
+Icon=@APPIMAGE_APP_ICON@
+Categories=Utility;
+Name[en_US]=@APPIMAGE_APP_NAME@.desktop

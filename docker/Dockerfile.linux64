@@ -1,0 +1,25 @@
+FROM rabits/qt:5.15-desktop
+MAINTAINER Dinesh Manajipet <saidinesh5@gmail.com>
+
+RUN curl -L "https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage" -o /tmp/linuxdeployqt \
+    && chmod a+x /tmp/linuxdeployqt \
+    && /tmp/linuxdeployqt --appimage-extract \
+    && sudo mv squashfs-root/usr/ /appimagetools \
+    && rm /tmp/linuxdeployqt
+
+RUN sudo apt-get update -y \
+    && sudo apt-get install -y libxcb1 \
+                               libxcb-glx0 \
+                               libxcb-keysyms1 \
+                               libxcb-image0 \
+                               libxcb-shm0 \
+                               libxcb-icccm4 \
+                               libxcb-xfixes0 \
+                               libxcb-shape0 \
+                               libxcb-randr0 \
+                               libxcb-render-util0 \
+                               libxcb-xinerama0 \
+                               file \
+                               ccache \
+    && sudo apt-get -qq clean \
+    && sudo rm -rf /var/lib/apt/lists/*
