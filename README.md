@@ -18,7 +18,7 @@ $ cd qt5-starter-template
 
 ```bash
 $ ./run-in-qt-build-environment.sh build_mingw32
-$ ls build/release/i686-w64-mingw32/
+$ ls build/artifacts/i686-w64-mingw32/
 Qt5 Starter Template-0.0.0.0-installer.exe
 ```
 
@@ -26,14 +26,14 @@ Qt5 Starter Template-0.0.0.0-installer.exe
 
 ```bash
 $ ./run-in-qt-build-environment.sh build_linux64
-$ ls build/release/linux64/
+$ ls build/artifacts/linux64/
 Qt5_Starter_Template-89eed88-x86_64.AppImage
 ```
 #### Build the apks for Android:
 
 ```bash
 $ ./run-in-qt-build-environment.sh build_android
-$  ls build/release/android/
+$  ls build/artifacts/android/
 qt5-starter-template-arm64-v8a-debug.apk
 qt5-starter-template-armeabi-v7a-debug.apk
 qt5-starter-template-x86_64-debug.apk

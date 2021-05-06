@@ -5,7 +5,7 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 WORKSPACE=${WORKSPACE:-$SCRIPT_DIR}
 BUILD_DIR="$WORKSPACE/build/build/$TARGET"
 DIST_DIR="$WORKSPACE/build/dist/$TARGET"
-RELEASE_DIR="$WORKSPACE/build/release/$TARGET"
+ARTIFACTS_DIR="$WORKSPACE/build/artifacts/$TARGET"
 TIMESTAMP=`date +%Y%m%d`
 BUILD_ID=${BUILD_ID:-$TIMESTAMP}
 CACHE_DIR=$WORKSPACE/build/cache/$TARGET
@@ -26,12 +26,12 @@ die() {
 cd "$WORKSPACE"
 rm -rf "$BUILD_DIR"
 rm -rf "$DIST_DIR"
-rm -rf "$RELEASE_DIR"
+rm -rf "$ARTIFACTS_DIR"
 mkdir -p "$CCACHE_DIR"
 mkdir -p "$GRADLE_DIR"
 mkdir -p "$MAVEN_DIR"
 mkdir -p "$BUILD_DIR"
-mkdir -p "$RELEASE_DIR"
+mkdir -p "$ARTIFACTS_DIR"
 
 cd "$BUILD_DIR"
 
@@ -74,4 +74,4 @@ else
     shred -uz $ANDROID_KEYSTORE_FILE
 fi
 
-find . -name *.apk -exec mv {} "$RELEASE_DIR" \; || die "Unable to move the built APKs"
+find . -name *.apk -exec mv {} "$ARTIFACTS_DIR" \; || die "Unable to move the built APKs"

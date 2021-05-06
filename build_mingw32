@@ -5,7 +5,7 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 WORKSPACE=${WORKSPACE:-$SCRIPT_DIR}
 BUILD_DIR="$WORKSPACE/build/build/$TARGET"
 DIST_DIR="$WORKSPACE/build/dist/$TARGET"
-RELEASE_DIR="$WORKSPACE/build/release/$TARGET"
+ARTIFACTS_DIR="$WORKSPACE/build/artifacts/$TARGET"
 TIMESTAMP=`date +%Y%m%d`
 BUILD_ID=${BUILD_ID:-$TIMESTAMP}
 CCACHE_DIR="$WORKSPACE/build/cache/$TARGET/ccache"
@@ -19,10 +19,10 @@ die() {
 cd "$WORKSPACE"
 rm -rf "$BUILD_DIR"
 rm -rf "$DIST_DIR"
-rm -rf "$RELEASE_DIR"
+rm -rf "$ARTIFACTS_DIR"
 mkdir -p "$CCACHE_DIR"
 mkdir -p "$BUILD_DIR"
-mkdir -p "$RELEASE_DIR"
+mkdir -p "$ARTIFACTS_DIR"
 
 cd $BUILD_DIR
 $TARGET-cmake -DCMAKE_INSTALL_PREFIX=$DIST_DIR -DCMAKE_BUILD_TYPE=MinSizeRel -DVERSION_FROM_GIT=true $WORKSPACE || die "Unable to configure the program"
@@ -34,7 +34,7 @@ $WORKSPACE/thirdparty/mxedeployqt/mxedeployqt --qtplugins="iconengines;imageform
                                               --additionallibs="libwinpthread-1.dll;icudt56.dll;icuin56.dll;icuuc56.dll" \
                                               --mxepath=/usr/ --mxetarget $TARGET --qmlrootpath=$WORKSPACE/qml $DIST_DIR || die "Unable to bundle the needed libraries"
 
-cd "$RELEASE_DIR"
+cd "$ARTIFACTS_DIR"
 cp "$BUILD_DIR/installer.nsis" .
 makensis -V4 "installer.nsis" || die "Unable to create installer"
 rm "installer.nsis"

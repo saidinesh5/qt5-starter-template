@@ -5,7 +5,7 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 WORKSPACE=${WORKSPACE:-$SCRIPT_DIR}
 BUILD_DIR="$WORKSPACE/build/build/$TARGET"
 DIST_DIR="$WORKSPACE/build/dist/$TARGET"
-RELEASE_DIR="$WORKSPACE/build/release/$TARGET"
+ARTIFACTS_DIR="$WORKSPACE/build/artifacts/$TARGET"
 TIMESTAMP=`date +%Y%m%d`
 BUILD_ID=${BUILD_ID:-$TIMESTAMP}
 CCACHE_DIR="$WORKSPACE/build/cache/$TARGET/ccache"
@@ -19,10 +19,10 @@ die() {
 cd "$WORKSPACE"
 rm -rf "$BUILD_DIR"
 rm -rf "$DIST_DIR"
-rm -rf "$RELEASE_DIR"
+rm -rf "$ARTIFACTS_DIR"
 mkdir -p "$CCACHE_DIR"
 mkdir -p "$BUILD_DIR"
-mkdir -p "$RELEASE_DIR"
+mkdir -p "$ARTIFACTS_DIR"
 
 cd "$BUILD_DIR"
 cmake -DCMAKE_INSTALL_PREFIX="$DIST_DIR" "$WORKSPACE" || die "Unable to configure the program"
@@ -34,4 +34,4 @@ PATH=/appimagetools/bin:$PATH linuxdeployqt $DIST_DIR/*.desktop \
                                             -exclude-libs="libqsqlibase,libqsqlodbc,libqsqlpsql,libqsqltds,libqsqlmysql" \
                                             -qmldir="$WORKSPACE/qml" || die "Unable to build AppImage"
 
-mv *.AppImage "$RELEASE_DIR"/
+mv *.AppImage "$ARTIFACTS_DIR"/
