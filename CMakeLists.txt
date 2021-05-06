@@ -108,7 +108,10 @@ elseif(${GNULINUX})
     set(APPIMAGE_APP_NAME "${APPLICATION_NAME}")
     set(APPIMAGE_APP_EXEC "${PROJECT_NAME}")
     set(APPIMAGE_APP_ICON "${PROJECT_NAME}")
-    configure_file(resources/logo.svg "${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}.svg" COPYONLY)
-    configure_file(packaging/Application.desktop "${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}.desktop")
-else()
+    configure_file(resources/logo.svg "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.svg" COPYONLY)
+    configure_file(packaging/Application.desktop "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.desktop")
+    install(FILES "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.svg"
+                  "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.desktop"
+                  DESTINATION
+                  ${CMAKE_INSTALL_PREFIX})
 endif()
