@@ -1,0 +1,7 @@
+FROM rabits/qt:5.15-android
+MAINTAINER Dinesh Manajipet <saidinesh5@gmail.com>
+
+RUN sudo apt-get update -y \
+    && sudo apt-get install -y ccache \
+    && sudo apt-get -qq clean \
+    && sudo rm -rf /var/lib/apt/lists/*

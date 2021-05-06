@@ -1,0 +1,77 @@
+#!/bin/bash
+
+TARGET="android"
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+WORKSPACE=${WORKSPACE:-$SCRIPT_DIR}
+BUILD_DIR="$WORKSPACE/build/build/$TARGET"
+DIST_DIR="$WORKSPACE/build/dist/$TARGET"
+RELEASE_DIR="$WORKSPACE/build/release/$TARGET"
+TIMESTAMP=`date +%Y%m%d`
+BUILD_ID=${BUILD_ID:-$TIMESTAMP}
+CACHE_DIR=$WORKSPACE/build/cache/$TARGET
+CCACHE_DIR="$CACHE_DIR/ccache"
+GRADLE_DIR="$CACHE_DIR/.gradle"
+MAVEN_DIR="$CACHE_DIR/.m2"
+ANDROID_BUILD_DIR="$BUILD_DIR/android-build"
+export ANDROID_SDK_HOME="$CACHE_DIR/.android"
+export GRADLE_USER_HOME="$GRADLE_DIR"
+export JAVA_HOME="`dirname $(dirname $(readlink -f $(which javac)))`"
+
+die() {
+  echo "Error:" $@
+  echo "Make sure your sources are compilable and run this script only in qt5-build-environment-android container."
+  exit -1
+}
+
+cd "$WORKSPACE"
+rm -rf "$BUILD_DIR"
+rm -rf "$DIST_DIR"
+rm -rf "$RELEASE_DIR"
+mkdir -p "$CCACHE_DIR"
+mkdir -p "$GRADLE_DIR"
+mkdir -p "$MAVEN_DIR"
+mkdir -p "$BUILD_DIR"
+mkdir -p "$RELEASE_DIR"
+
+cd "$BUILD_DIR"
+
+# Create APK
+if [[ -z "${ANDROID_KEYSTORE_FILE_CONTENTS}" ]] || [[ -z "${ANDROID_KEYSTORE_PASS}" ]] || [[ -z "${ANDROID_KEYSTORE_ALIAS}" ]]; then
+    echo "Creating an unsigned apk"
+    cmake -DCMAKE_BUILD_TYPE:STRING=Release \
+        -DANDROID_ABI:STRING=armeabi-v7a \
+        -DANDROID_BUILD_ABI_arm64-v8a:BOOL=ON \
+        -DANDROID_BUILD_ABI_x86:BOOL=ON \
+        -DANDROID_BUILD_ABI_x86_64:BOOL=ON \
+        -DANDROID_NATIVE_API_LEVEL:STRING="${ANDROID_NATIVE_API_LEVEL}" \
+        -DANDROID_SDK:PATH="${ANDROID_SDK_ROOT}" \
+        -DANDROID_NDK:PATH="${ANDROID_NDK_ROOT}" \
+        -DCMAKE_PREFIX_PATH:PATH="${QT_ANDROID}" \
+        -DCMAKE_FIND_ROOT_PATH:STRING="${QT_ANDROID}" \
+        -DCMAKE_TOOLCHAIN_FILE:PATH="${ANDROID_NDK_ROOT}/build/cmake/android.toolchain.cmake" \
+        "$WORKSPACE" || die "Unable to configure the program"
+    make -j `nproc` || die "Unable to build the program"
+else
+    echo "Creating a signed apk"
+    ANDROID_KEYSTORE_FILE=/tmp/keystore
+    echo $ANDROID_KEYSTORE_FILE_CONTENTS | base64 -di > $ANDROID_KEYSTORE_FILE
+    cmake -DCMAKE_BUILD_TYPE:STRING=Release \
+        -DANDROID_ABI:STRING=armeabi-v7a \
+        -DANDROID_BUILD_ABI_arm64-v8a:BOOL=ON \
+        -DANDROID_BUILD_ABI_x86:BOOL=ON \
+        -DANDROID_BUILD_ABI_x86_64:BOOL=ON \
+        -DANDROID_NATIVE_API_LEVEL:STRING="${ANDROID_NATIVE_API_LEVEL}" \
+        -DANDROID_SDK:PATH="${ANDROID_SDK_ROOT}" \
+        -DANDROID_NDK:PATH="${ANDROID_NDK_ROOT}" \
+        -DANDROID_KEYSTORE_FILE="${ANDROID_KEYSTORE_FILE}" \
+        -DANDROID_KEYSTORE_ALIAS="${ANDROID_KEYSTORE_ALIAS}" \
+        -DANDROID_KEYSTORE_PASSWORD="${ANDROID_KEYSTORE_PASSWORD}" \
+        -DCMAKE_PREFIX_PATH:PATH="${QT_ANDROID}" \
+        -DCMAKE_FIND_ROOT_PATH:STRING="${QT_ANDROID}" \
+        -DCMAKE_TOOLCHAIN_FILE:PATH="${ANDROID_NDK_ROOT}/build/cmake/android.toolchain.cmake" \
+        "$WORKSPACE" || die "Unable to configure the program"
+    make -j `nproc` || die "Unable to build the program"
+    shred -uz $ANDROID_KEYSTORE_FILE
+fi
+
+find . -name *.apk -exec mv {} "$RELEASE_DIR" \; || die "Unable to move the built APKs"

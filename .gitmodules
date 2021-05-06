@@ -1,3 +1,6 @@
 [submodule "thirdparty/mxedeployqt"]
 	path = thirdparty/mxedeployqt
 	url = https://github.com/saidinesh5/mxedeployqt
+[submodule "thirdparty/qt-android-cmake"]
+	path = thirdparty/qt-android-cmake
+	url = https://github.com/LaurentGomila/qt-android-cmake

@@ -29,6 +29,16 @@ $ ./run-in-qt-build-environment.sh build_linux64
 $ ls build/release/linux64/
 Qt5_Starter_Template-89eed88-x86_64.AppImage
 ```
+#### Build the apks for Android:
+
+```bash
+$ ./run-in-qt-build-environment.sh build_android
+$  ls build/release/android/
+qt5-starter-template-arm64-v8a-debug.apk
+qt5-starter-template-armeabi-v7a-debug.apk
+qt5-starter-template-x86_64-debug.apk
+qt5-starter-template-x86-debug.apk
+```
 
 ## Customizing the project for your own needs
 
@@ -45,6 +55,9 @@ set(APPLICATION_LICENSE "MIT License")
 set(APPLICATION_ICON "${CMAKE_SOURCE_DIR}/resources/icon.ico")
 set(APPLICATION_BANNER "${CMAKE_SOURCE_DIR}/resources/logo.bmp")
 ```
+
+* For customizing Android side of things, do update `android/AndroidManifest.xml` .
+If you wish to update the android build tools, you may have to give user write permissions to /opt
 
 ## Thanks to
 * https://www.conjur.org/blog/building-a-windows-installer-from-a-linux-ci-pipeline/

@@ -86,7 +86,9 @@ else()
 endif()
 
 add_custom_target(OtherFiles DEPENDS ALL
-    SOURCES "README.md"
+                             SOURCES "README.md"
+                                     "android/AndroidManifest.xml"
+                                     "android/res/values/libs.xml"
 )
 
 # Packaging
@@ -104,6 +106,13 @@ if (WIN32)
     set(NSIS_APP_LICENSE "${APPLICATION_LICENSE}")
     set(NSIS_APP_DIST_DIR "${CMAKE_INSTALL_PREFIX}")
     configure_file(packaging/installer.nsis.in installer.nsis @ONLY)
+elseif(ANDROID)
+    include(thirdparty/qt-android-cmake/AddQtAndroidApk.cmake)
+    add_qt_android_apk(${PROJECT_NAME}_apk ${PROJECT_NAME}
+                                       NAME ${APPLICATION_NAME}
+                                       PACKAGE_SOURCES ${CMAKE_CURRENT_LIST_DIR}/android
+                                       KEYSTORE ${ANDROID_KEYSTORE_FILE} ${ANDROID_KEYSTORE_ALIAS}
+                                       KEYSTORE_PASSWORD ${ANDROID_KEYSTORE_PASSWORD})
 elseif(${GNULINUX})
     set(APPIMAGE_APP_NAME "${APPLICATION_NAME}")
     set(APPIMAGE_APP_EXEC "${PROJECT_NAME}")

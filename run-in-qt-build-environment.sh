@@ -7,6 +7,8 @@ if [[ `basename $TARGET` == build_mingw32 ]]; then
     CONTAINER=${CONTAINER:-docker.pkg.github.com/saidinesh5/qt5-starter-template/qt5-build-environment-mingw32}
 elif [[ `basename $TARGET` == build_linux64 ]]; then
     CONTAINER=${CONTAINER:-docker.pkg.github.com/saidinesh5/qt5-starter-template/qt5-build-environment-linux64}
+elif [[ `basename $TARGET` == build_android ]]; then
+    CONTAINER=${CONTAINER:-docker.pkg.github.com/saidinesh5/qt5-starter-template/qt5-build-environment-android}
 else
     echo "Unknown target!"
     exit -1
