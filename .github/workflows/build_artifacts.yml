@@ -1,0 +1,28 @@
+name: Build Artifacts
+
+on:
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build-mingw32:
+    runs-on: ubuntu-latest
+    container:
+      image: docker.pkg.github.com/saidinesh5/qt5-starter-template/qt5-build-environment-mingw32
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+
+      - name: Build the installer using mingw32
+        run: |
+          ./build_mingw32
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: ${{ github.run_id }}-artifacts-win32
+          path: build/artifacts/i686-w64-mingw32/*.exe
