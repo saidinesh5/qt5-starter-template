@@ -54,10 +54,39 @@ jobs:
         run: git submodule update --init --recursive --force
 
       - name: Build the AppImage for Linux x86_64
-        run: |
-          ./build_linux64
+        run: ./build_linux64
 
       - uses: actions/upload-artifact@v2
         with:
           name: ${{ github.run_id }}-artifacts-linux64
           path: build/artifacts/linux64/*.AppImage
+
+  build-android:
+    needs: configure
+    runs-on: ubuntu-latest
+    container:
+      image: docker.pkg.github.com/saidinesh5/qt5-starter-template/qt5-build-environment-android
+      options: --user ${{ needs.configure.outputs.uid_gid }}
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Checkout submodules
+        run: git submodule update --init --recursive --force
+
+      - name: Cache build dependencies
+        uses: actions/cache@v2
+        with:
+          key: ${{ runner.os }}-build-cache-android
+          path: build/cache/android
+
+      - name: Build the apks for Android
+        run: ./build_android
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: ${{ github.run_id }}-artifacts-android
+          path: build/artifacts/android
