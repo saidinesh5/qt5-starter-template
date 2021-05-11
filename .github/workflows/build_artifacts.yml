@@ -5,24 +5,59 @@ on:
     branches: [ master ]
 
 jobs:
+  configure:
+    runs-on: ubuntu-latest
+    outputs:
+      uid_gid: ${{ steps.get-user.outputs.uid_gid }}
+    steps:
+      - id: get-user
+        run: echo "::set-output name=uid_gid::$(id -u):$(id -g)"
+
   build-mingw32:
+    needs: configure
     runs-on: ubuntu-latest
     container:
       image: docker.pkg.github.com/saidinesh5/qt5-starter-template/qt5-build-environment-mingw32
+      options: --user ${{ needs.configure.outputs.uid_gid }}
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
-      - uses: actions/checkout@v2
-        with:
-          submodules: 'recursive'
+      - uses: actions/checkout@v1
+
+      - name: Checkout submodules
+        run: git submodule update --init --recursive --force
 
       - name: Build the installer using mingw32
-        run: |
-          ./build_mingw32
+        run: ./build_mingw32
 
       - uses: actions/upload-artifact@v2
         with:
           name: ${{ github.run_id }}-artifacts-win32
           path: build/artifacts/i686-w64-mingw32/*.exe
+
+  build-linux64:
+    needs: configure
+    runs-on: ubuntu-latest
+    container:
+      image: docker.pkg.github.com/saidinesh5/qt5-starter-template/qt5-build-environment-linux64
+      options: --user ${{ needs.configure.outputs.uid_gid }}
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Checkout submodules
+        run: git submodule update --init --recursive --force
+
+      - name: Build the AppImage for Linux x86_64
+        run: |
+          ./build_linux64
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: ${{ github.run_id }}-artifacts-linux64
+          path: build/artifacts/linux64/*.AppImage
