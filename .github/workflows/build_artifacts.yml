@@ -1,0 +1,47 @@
+name: Build Artifacts
+
+on:
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  configure:
+    runs-on: ubuntu-latest
+    outputs:
+      uid_gid: ${{ steps.get-user.outputs.uid_gid }}
+    steps:
+      - id: get-user
+        run: echo "::set-output name=uid_gid::$(id -u):$(id -g)"
+
+  build:
+    needs: configure
+    strategy:
+      matrix:
+        target: [mingw32, linux64, android]
+    runs-on: ubuntu-latest
+    container:
+      image: docker.pkg.github.com/saidinesh5/qt5-starter-template/qt5-build-environment-${{ matrix.target }}
+      options: --user ${{ needs.configure.outputs.uid_gid }}
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Checkout submodules
+        run: git submodule update --init --recursive --force
+
+      - name: Cache build dependencies
+        uses: actions/cache@v2
+        with:
+          key: ${{ runner.os }}-build-cache-${{ matrix.target }}
+          path: build/cache/${{ matrix.target }}
+
+      - name: Build package
+        run: ./build_${{ matrix.target }}
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: ${{ github.run_id }}-artifacts-${{ matrix.target }}
+          path: build/artifacts/${{ matrix.target }}
