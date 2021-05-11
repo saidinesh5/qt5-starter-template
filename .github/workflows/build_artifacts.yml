@@ -13,59 +13,14 @@ jobs:
       - id: get-user
         run: echo "::set-output name=uid_gid::$(id -u):$(id -g)"
 
-  build-mingw32:
+  build:
     needs: configure
+    strategy:
+      matrix:
+        target: [mingw32, linux64, android]
     runs-on: ubuntu-latest
     container:
-      image: docker.pkg.github.com/saidinesh5/qt5-starter-template/qt5-build-environment-mingw32
-      options: --user ${{ needs.configure.outputs.uid_gid }}
-      credentials:
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
-
-    steps:
-      - uses: actions/checkout@v1
-
-      - name: Checkout submodules
-        run: git submodule update --init --recursive --force
-
-      - name: Build the installer using mingw32
-        run: ./build_mingw32
-
-      - uses: actions/upload-artifact@v2
-        with:
-          name: ${{ github.run_id }}-artifacts-win32
-          path: build/artifacts/i686-w64-mingw32/*.exe
-
-  build-linux64:
-    needs: configure
-    runs-on: ubuntu-latest
-    container:
-      image: docker.pkg.github.com/saidinesh5/qt5-starter-template/qt5-build-environment-linux64
-      options: --user ${{ needs.configure.outputs.uid_gid }}
-      credentials:
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
-
-    steps:
-      - uses: actions/checkout@v1
-
-      - name: Checkout submodules
-        run: git submodule update --init --recursive --force
-
-      - name: Build the AppImage for Linux x86_64
-        run: ./build_linux64
-
-      - uses: actions/upload-artifact@v2
-        with:
-          name: ${{ github.run_id }}-artifacts-linux64
-          path: build/artifacts/linux64/*.AppImage
-
-  build-android:
-    needs: configure
-    runs-on: ubuntu-latest
-    container:
-      image: docker.pkg.github.com/saidinesh5/qt5-starter-template/qt5-build-environment-android
+      image: docker.pkg.github.com/saidinesh5/qt5-starter-template/qt5-build-environment-${{ matrix.target }}
       options: --user ${{ needs.configure.outputs.uid_gid }}
       credentials:
         username: ${{ github.actor }}
@@ -80,13 +35,13 @@ jobs:
       - name: Cache build dependencies
         uses: actions/cache@v2
         with:
-          key: ${{ runner.os }}-build-cache-android
-          path: build/cache/android
+          key: ${{ runner.os }}-build-cache-${{ matrix.target }}
+          path: build/cache/${{ matrix.target }}
 
-      - name: Build the apks for Android
-        run: ./build_android
+      - name: Build package
+        run: ./build_${{ matrix.target }}
 
       - uses: actions/upload-artifact@v2
         with:
-          name: ${{ github.run_id }}-artifacts-android
-          path: build/artifacts/android
+          name: ${{ github.run_id }}-artifacts-${{ matrix.target }}
+          path: build/artifacts/${{ matrix.target }}

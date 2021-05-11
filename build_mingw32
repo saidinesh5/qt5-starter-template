@@ -5,10 +5,11 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 WORKSPACE=${WORKSPACE:-$SCRIPT_DIR}
 BUILD_DIR="$WORKSPACE/build/build/$TARGET"
 DIST_DIR="$WORKSPACE/build/dist/$TARGET"
-ARTIFACTS_DIR="$WORKSPACE/build/artifacts/$TARGET"
+ARTIFACTS_DIR="$WORKSPACE/build/artifacts/mingw32"
 TIMESTAMP=`date +%Y%m%d`
 BUILD_ID=${BUILD_ID:-$TIMESTAMP}
-CCACHE_DIR="$WORKSPACE/build/cache/$TARGET/ccache"
+CACHE_DIR="$WORKSPACE/build/cache/mingw32"
+CCACHE_DIR="$CACHE_DIR/ccache"
 
 die() {
   echo "Error:" $@
