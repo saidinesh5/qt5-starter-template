@@ -19,7 +19,8 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-option(VERSION_FROM_GIT "Use the version from git" OFF)
+option(VERSION_FROM_GIT "Use the version from git" ON)
+find_package(Git QUIET)
 include(cmake/GetVersionFromGitTag.cmake)
 configure_file(version.h.in version.h)
 
