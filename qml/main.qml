@@ -5,7 +5,8 @@ ApplicationWindow {
     width: 640
     height: 480
     visible: true
-    title: qsTr("Tabs")
+    title: "%1 %2".arg(Qt.application.name)
+                    .arg(Qt.application.version)
 
     SwipeView {
         id: swipeView

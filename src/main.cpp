@@ -1,5 +1,6 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
+#include "version.h"
 
 int main(int argc, char *argv[])
 {
@@ -8,6 +9,10 @@ int main(int argc, char *argv[])
 #endif
 
     QGuiApplication app(argc, argv);
+    app.setApplicationName(QString::fromLocal8Bit(APPLICATION_NAME));
+    app.setApplicationVersion(QString::fromLocal8Bit(APPLICATION_VERSION_STRING_FULL));
+    app.setOrganizationName(QString::fromLocal8Bit(APPLICATION_COMPANY_NAME));
+    app.setOrganizationDomain(QString::fromLocal8Bit(APPLICATION_COMPANY_DOMAIN));
 
     QQmlApplicationEngine engine;
     const QUrl url(QStringLiteral("qrc:/main.qml"));
