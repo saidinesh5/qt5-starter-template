@@ -32,6 +32,6 @@ make install
 PATH=/appimagetools/bin:$PATH linuxdeployqt $DIST_DIR/*.desktop \
                                             -appimage \
                                             -exclude-libs="libqsqlibase,libqsqlodbc,libqsqlpsql,libqsqltds,libqsqlmysql" \
-                                            -qmldir="$WORKSPACE/qml" || die "Unable to build AppImage"
+                                            -qmldir="$WORKSPACE/src/qml" || die "Unable to build AppImage"
 
 mv *.AppImage "$ARTIFACTS_DIR"/

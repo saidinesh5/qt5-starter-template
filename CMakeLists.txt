@@ -49,7 +49,7 @@ set(TS_FILES translations/translation_de_DE.ts)
 
 set(PROJECT_SOURCES
         src/main.cpp
-        qml/qml.qrc
+        src/qml/qml.qrc
         ${TS_FILES}
 )
 
@@ -63,7 +63,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         ${PROJECT_SOURCES}
     )
 
-    qt_create_translation(QM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES})
+    qt_create_translation(QM_FILES ${CMAKE_SOURCE_DIR}/src ${TS_FILES})
 else()
     if(ANDROID)
         add_library(${PROJECT_NAME} SHARED ${PROJECT_SOURCES})
@@ -73,7 +73,7 @@ else()
         add_executable(${PROJECT_NAME} ${PROJECT_SOURCES})
     endif()
 
-    qt5_create_translation(QM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES})
+    qt5_create_translation(QM_FILES ${CMAKE_SOURCE_DIR}/src ${TS_FILES})
 endif()
 
 target_compile_definitions(${PROJECT_NAME}

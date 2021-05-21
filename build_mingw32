@@ -33,7 +33,7 @@ make install
 $WORKSPACE/thirdparty/mxedeployqt/mxedeployqt --qtplugins="iconengines;imageformats;platforminputcontexts;platforms;sqldrivers;styles" \
                                               --skiplibs="qsqlmysql.dll;qsqlodbc.dll;qsqlpsql.dll;qsqltds.dll" \
                                               --additionallibs="libwinpthread-1.dll;icudt56.dll;icuin56.dll;icuuc56.dll" \
-                                              --mxepath=/usr/ --mxetarget $TARGET --qmlrootpath=$WORKSPACE/qml $DIST_DIR || die "Unable to bundle the needed libraries"
+                                              --mxepath=/usr/ --mxetarget $TARGET --qmlrootpath=$WORKSPACE/src/qml $DIST_DIR || die "Unable to bundle the needed libraries"
 
 cd "$ARTIFACTS_DIR"
 cp "$BUILD_DIR/installer.nsis" .
